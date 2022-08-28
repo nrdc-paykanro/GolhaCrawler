@@ -16,6 +16,8 @@
   "dependencies": {
     "@types/cheerio": "^0.22.31",
     "axios": "^0.26.1",
-    "cheerio": "^1.0.0-rc.12"
+    "cheerio": "^1.0.0-rc.12",
+    "chromium": "^3.0.3",
+    "puppeteer": "^16.2.0"
   }
 }
