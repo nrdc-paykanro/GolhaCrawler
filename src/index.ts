@@ -8,7 +8,7 @@ async function main() {
 		const html = response.data;
 		const indVOD = html.indexOf('vod');
 		let str = html.slice(indVOD+4,html.indexOf('\"',indVOD));
-		console.log(str);
+		console.log("https://backup.golha.co.uk/vod/"+str);
 		
 		const $ = cheerio.load(html,{xmlMode:true});
 	
