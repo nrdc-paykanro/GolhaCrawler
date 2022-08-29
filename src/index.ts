@@ -36,8 +36,9 @@ async function getProgramDetail() {
     for (let element of detailElementTags) {
       let data = await page.evaluate((e) => e.innerHTML, element);
       const $ = load(data);
-      let a = $("em").each((element) => {
+      let a = $("*").each((i,element) => {
         console.log(element);
+        //element.attribs.onclick
       });
       console.log(data);
 
