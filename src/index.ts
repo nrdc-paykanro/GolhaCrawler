@@ -1,53 +1,57 @@
 import fs from "fs";
 import path from "path";
 import axios from "axios";
-import cheerio from "cheerio";
-import puppeteer from "puppeteer"
+import puppeteer from "puppeteer";
+import { load } from "cheerio";
 //extract File address from pure html
-function getProgramFileAddress(html: string, baseAddress: string) {
+async function getProgramFileAddress(baseAddress: string) {
+  //baseAddress : https://backup.golha.co.uk/vod/
+  const response = await axios.get(
+    "https://backup.golha.co.uk/fa/programme/717#.YwxBtGVByM8"
+  );
+  const html = response.data;
   const indVOD = html.indexOf("vod");
   let str = html.slice(indVOD + 4, html.indexOf('"', indVOD));
+  console.log(baseAddress + str);
   return baseAddress + str;
 }
 
-function getProgramDetail(html: string) {
-//   const $ = cheerio.load(html);
-//   let itemList = $(".item_div");
-//   console.log(itemList);
+async function getProgramDetail() {
+  let detaliInfoArray: string[];
+  const browser = await puppeteer.launch({
+    headless: true,
+    timeout: 300000,
+  });
+  const page = await browser.newPage();
+  try {
+    await page.goto("https://backup.golha.co.uk/fa/programme/717#.YwxBtGVByM8");
+    const audioSrc = await page.evaluate(
+      'document.querySelector("#jp_audio_0").getAttribute("src")'
+    );
+    console.log(audioSrc);
+
+    // const b = await page.evaluate('document.querySelector(".item_div")');
+    await page.waitForSelector(".item_div");
+    let detailElementTags = await page.$$(".item_div");
+    for (let element of detailElementTags) {
+      let data = await page.evaluate((e) => e.innerHTML, element);
+      const $ = load(data);
+      let a = $("em").each((element) => {
+        console.log(element);
+      });
+      console.log(data);
+
+      // detaliInfoArray.push(await page.evaluate((e) => e.textContent, element));
+    }
+
+    await browser.close();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function main() {
-  const response = await axios.get(
-    "https://backup.golha.co.uk/fa/programme/1547#.YwrxD0ZByM8"
-  );
-  const html = response.data;
-
-  getProgramDetail(html);
-
-  const puppeteer = require("puppeteer");
-
-  (async () => {
-    const browser = await puppeteer.launch({
-      headless: "headless",
-  });
-    const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(0);
-    await page.goto("https://backup.golha.co.uk/fa/programme/1547#.YwrxD0ZByM8");
-    //const audioSrc = await page.evaluate('document.querySelector("#jp_audio_0").getAttribute("src")');
-    // const b = await page.evaluate('document.querySelector(".item_div")');
-
-    // const n = await page.$eval(".item_div");
-    let a = await page.evaluate(() => {
-      let data = [];
-      let elements = document.getElementsByClassName('item_div');
-      for (var element of elements)
-          data.push(element.textContent);
-      return data;
-  });
-    await browser.close();
-  })();
-  //get file address
-  console.log(getProgramFileAddress(html, "https://backup.golha.co.uk/vod/"));
+  getProgramDetail();
 }
 
 main();
