@@ -4,10 +4,21 @@ import axios from "axios";
 import puppeteer from "puppeteer";
 import { load } from "cheerio";
 
-interface informationDetail {
-  duration:string[],
-  left:string,
-  right:string
+interface audioDetailInfo{
+  fromTo:string[],
+  title:string,
+  timeLineLocation:string,
+  detail:[{
+    title:string,
+    name:string
+  }]
+}
+interface programInformationDetail {
+  programGolhaLink:string,
+  programTitle:string,
+  fileAddress:string,
+  programArtists:string[],
+  audioDetailInfo:audioDetailInfo[],
 }
 //extract File address from pure html
 async function getProgramFileAddress(baseAddress: string) {
