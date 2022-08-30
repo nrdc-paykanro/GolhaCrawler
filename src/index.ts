@@ -16,7 +16,7 @@ interface audioDetailInfo{
 interface programInformationDetail {
   programGolhaLink:string,
   programTitle:string,
-  fileAddress:string,
+  programFileAddress:string,
   programArtists:string[],
   audioDetailInfo:audioDetailInfo[],
 }
@@ -41,7 +41,8 @@ async function getProgramDetail() {
   });
   const page = await browser.newPage();
   try {
-    await page.goto("https://backup.golha.co.uk/fa/programme/717#.YwxBtGVByM8");
+    let golhaLinkAddress:string = "https://backup.golha.co.uk/fa/programme/717#.YwxBtGVByM8";
+    await page.goto(golhaLinkAddress);
     const audioSrc = await page.evaluate(
       'document.querySelector("#jp_audio_0").getAttribute("src")'
     );
