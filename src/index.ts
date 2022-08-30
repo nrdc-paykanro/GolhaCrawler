@@ -3,6 +3,12 @@ import path from "path";
 import axios from "axios";
 import puppeteer from "puppeteer";
 import { load } from "cheerio";
+
+interface informationDetail {
+  duration:string[],
+  left:string,
+  right:string
+}
 //extract File address from pure html
 async function getProgramFileAddress(baseAddress: string) {
   //baseAddress : https://backup.golha.co.uk/vod/
@@ -36,8 +42,18 @@ async function getProgramDetail() {
     for (let element of detailElementTags) {
       let data = await page.evaluate((e) => e.innerHTML, element);
       const $ = load(data);
-      let a = $("*").each((i,element) => {
-        console.log(element);
+      let a = $("*").each((i, element) => {
+        let elName: any = (element as any).name;
+        let elDuration: string[] = [];
+        let elInformation : string[] = [];
+        if (elName === "a" || elName === "em") {
+          let elValue = (element as any).children[0].data;
+          (element as any).attribs.onclick &&
+            (elDuration = extractDurition((element as any).attribs.onclick));
+          if (elValue !== null && elValue !== undefined) 
+            elInformation.push((element as any).children[0].data)
+            console.log((element as any).children[0].data);
+        }
         //element.attribs.onclick
       });
       console.log(data);
@@ -49,6 +65,16 @@ async function getProgramDetail() {
   } catch (err) {
     console.log(err);
   }
+}
+
+function extractDurition(stringFunction: string){
+  stringFunction = stringFunction.replace('cue(','');
+  stringFunction = stringFunction.replace(');','');
+  stringFunction = stringFunction.replace('\'','');
+  stringFunction = stringFunction.replace('\'','');
+  stringFunction = stringFunction.replace(' ','');
+
+  return stringFunction.split(',');
 }
 
 async function main() {
