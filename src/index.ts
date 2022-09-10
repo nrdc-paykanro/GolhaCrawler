@@ -33,21 +33,22 @@ async function getProgramFileAddress(baseAddress: string) {
   return baseAddress + str;
 }
 
-async function getProgramDetail() {
+async function getASingleProgram(programPageLinkAddress:string) {
   let detaliInfoArray: string[];
   const browser = await puppeteer.launch({
+    
     headless: true,
-    timeout: 300000,
+    timeout:0
   });
   const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(0); 
   try {
-    let golhaLinkAddress:string = "https://backup.golha.co.uk/fa/programme/717#.YwxBtGVByM8";
-    await page.goto(golhaLinkAddress);
+    await page.goto(programPageLinkAddress,{    waitUntil: 'load',
+  });
     const audioSrc = await page.evaluate(
       'document.querySelector("#jp_audio_0").getAttribute("src")'
     );
     console.log(audioSrc);
-
     // const b = await page.evaluate('document.querySelector(".item_div")');
     await page.waitForSelector(".item_div");
     let detailElementTags = await page.$$(".item_div");
@@ -66,15 +67,13 @@ async function getProgramDetail() {
             elInformation.push((element as any).children[0].data)
             console.log((element as any).children[0].data);
         }
-        //element.attribs.onclick
       });
       console.log(data);
-
       // detaliInfoArray.push(await page.evaluate((e) => e.textContent, element));
     }
-
     await browser.close();
   } catch (err) {
+    
     console.log(err);
   }
 }
@@ -90,7 +89,7 @@ function extractDurition(stringFunction: string){
 }
 
 async function main() {
-  getProgramDetail();
+  getASingleProgram("https://backup.golha.co.uk/fa/programme/717#.YwxBtGVByM8");
 }
 
 main();
