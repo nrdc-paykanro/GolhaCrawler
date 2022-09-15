@@ -18,6 +18,7 @@
     "axios": "^0.26.1",
     "cheerio": "^1.0.0-rc.12",
     "chromium": "^3.0.3",
+    "mongoose": "^6.6.1",
     "puppeteer": "^16.2.0"
   }
 }
